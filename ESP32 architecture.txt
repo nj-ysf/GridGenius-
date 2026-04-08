@@ -1,0 +1,25 @@
+[Panneau PV mini]
+      ↓
+[INA219 PV] ──┐
+[INA219 BAT]──┤
+[DS18B20]   ──┤→ ESP32 ──WiFi/MQTT──→ Raspberry Pi / PC
+[PIR]       ──┤              ↓
+[OLED]      ──┘         GridGenius
+                         ├── InfluxDB
+                         ├── api.py → décision
+                         └── Dashboard Streamlit
+                                   ↓
+                         MQTT pub décision
+                                   ↓
+                         ESP32 reçoit → LED / Relais
+
+
+Ce que voit le jury — scénario de démo idéal
+
+Vous posez le prototype sur la table — panneau PV, batterie, ESP32 avec OLED allumé
+Vous allumez le Raspberry Pi — GridGenius démarre
+L'OLED affiche en temps réel : PV: 3.2W | SOC: 67% | T: 29°C
+Vous passez la main devant le PIR → PIR: OCCUPE sur l'OLED
+Le dashboard sur écran montre les données en temps réel
+Vous planifiez un événement → le système recommande le meilleur créneau solaire
+Vous débranchez le panneau → le système bascule sur batterie automatiquement
