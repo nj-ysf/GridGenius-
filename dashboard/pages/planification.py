@@ -4,201 +4,232 @@
 import streamlit as st
 from datetime import date, timedelta
 
-API = "http://localhost:8000"
+API   = "http://localhost:8000"
+AMBER = "#e8a020"
+COBALT= "#2060d8"
+SUCC  = "#22a86b"
+DANG  = "#c93030"
+MUTED = "#4a6080"
 
 
 def render(api_get, api_post, api_delete):
     st.markdown("""
-    <div style='font-family:Space Mono;font-size:20px;font-weight:700;
-                color:#e2e8f0;margin-bottom:2px'>PLANIFICATION ÉVÉNEMENTS</div>
-    <div style='font-family:Space Mono;font-size:9px;color:#64748b;
-                letter-spacing:3px;margin-bottom:20px'>
-        Score = α·PV + β·SOC - γ·Grid - δ·Conflit
-    </div>""", unsafe_allow_html=True)
+    <div class='gg-page-title'>Planification</div>
+    <div class='gg-page-sub'>Score = α·PV + β·SOC − γ·Grid − δ·Conflit</div>
+    """, unsafe_allow_html=True)
 
     tab1, tab2 = st.tabs(["RECOMMANDER UN CRÉNEAU", "ÉVÉNEMENTS PLANIFIÉS"])
 
-    # ── Tab 1 : Recommandation ─────────────────────────────────
+    # ── Tab 1 ──────────────────────────────────────────────────
     with tab1:
-        st.markdown("<div class='label' style='margin-bottom:12px'>"
-                    "Paramètres</div>", unsafe_allow_html=True)
-
-        profiles = api_get("/events/profiles").get("profiles", {})
+        profiles   = api_get("/events/profiles").get("profiles", {})
         type_labels = {k: v['label'] for k, v in profiles.items()}
 
         c1, c2, c3 = st.columns(3)
         with c1:
-            ev_type = st.selectbox("Type", list(type_labels.keys()),
+            ev_type = st.selectbox("Type d'événement", list(type_labels.keys()),
                                     format_func=lambda x: type_labels.get(x, x))
         with c2:
             duration_h = st.number_input("Durée (h)", 0.5, 8.0, 2.0, 0.5)
         with c3:
-            top_n = st.slider("Créneaux à proposer", 1, 5, 3)
+            top_n = st.slider("Créneaux proposés", 1, 5, 3)
 
         custom_kw, custom_imp = None, None
         if ev_type == "autre":
             cc1, cc2 = st.columns(2)
-            with cc1:
-                custom_kw  = st.number_input("Consommation (kW)", 0.5, 50.0, 5.0)
-            with cc2:
-                custom_imp = st.slider("Importance (%)", 0, 100, 50)
+            with cc1: custom_kw  = st.number_input("Consommation (kW)", 0.5, 50.0, 5.0)
+            with cc2: custom_imp = st.slider("Importance (%)", 0, 100, 50)
 
         c4, c5 = st.columns(2)
-        with c4:
-            date_from = st.date_input("Du", date.today())
-        with c5:
-            date_to   = st.date_input("Au", date.today()+timedelta(days=7))
+        with c4: date_from = st.date_input("Du", date.today())
+        with c5: date_to   = st.date_input("Au", date.today() + timedelta(days=7))
 
-        if st.button("RECHERCHER LES MEILLEURS CRÉNEAUX", use_container_width=True):
-            payload = {"event_type":ev_type, "duration_h":duration_h,
-                       "date_from":str(date_from), "date_to":str(date_to),
-                       "top_n":top_n}
-            if custom_kw:  payload["custom_kw"]         = custom_kw
-            if custom_imp: payload["custom_importance"]  = custom_imp
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-            with st.spinner("Analyse en cours..."):
+        if st.button("ANALYSER LES CRÉNEAUX", use_container_width=True):
+            payload = {
+                "event_type": ev_type, "duration_h": duration_h,
+                "date_from": str(date_from), "date_to": str(date_to),
+                "top_n": top_n
+            }
+            if custom_kw:  payload["custom_kw"]        = custom_kw
+            if custom_imp: payload["custom_importance"] = custom_imp
+
+            with st.spinner("Analyse heuristique en cours..."):
                 result = api_post("/recommend", payload)
 
             if result.get("error"):
-                st.error(result["error"])
-                return
+                st.markdown(f"<div class='gg-alert-c'>{result['error']}</div>",
+                            unsafe_allow_html=True); return
 
-            # Statut LEARNING
             if result.get("status") == "LEARNING":
-                st.warning(f"📚 {result.get('message','Données insuffisantes')}")
-                return
+                st.markdown(f"""
+                <div class='gg-learning'>
+                    <div style='font-family:JetBrains Mono,monospace;font-size:10px;
+                                color:#e8a020;letter-spacing:2px'>DONNÉES INSUFFISANTES</div>
+                    <div style='font-size:12px;color:#4a6080;margin-top:6px'>
+                        {result.get('message','Collecte en cours...')}
+                    </div>
+                </div>""", unsafe_allow_html=True); return
 
             slots    = result.get("top_slots", [])
             cfg      = result.get("scoring_config", {})
             warnings = result.get("warnings", [])
 
-            # Info scoring
+            # Scoring recap
             st.markdown(f"""
-            <div style='font-family:Space Mono;font-size:10px;color:#64748b;
-                        background:#111827;border:1px solid #1e2a3a;
-                        border-radius:8px;padding:10px;margin:12px 0'>
-                α={cfg.get('alpha',0.4):.2f}·PV +
-                β={cfg.get('beta',0.35):.2f}·SOC -
-                γ={cfg.get('gamma',0.5):.2f}·Grid -
-                δ={cfg.get('delta',0.3):.2f}·Conflit &nbsp;|&nbsp;
+            <div class='gg-formula'>
+                α={cfg.get('alpha',0.4):.2f}·PV &nbsp;+&nbsp;
+                β={cfg.get('beta',0.35):.2f}·SOC &nbsp;−&nbsp;
+                γ={cfg.get('gamma',0.5):.2f}·Grid &nbsp;−&nbsp;
+                δ={cfg.get('delta',0.3):.2f}·Conflit
+                &nbsp;&nbsp;|&nbsp;&nbsp;
                 {result.get('n_candidates',0)} candidats évalués
             </div>""", unsafe_allow_html=True)
 
             for w in warnings:
-                st.warning(w)
+                st.markdown(f"<div class='gg-alert-w'>{w}</div>", unsafe_allow_html=True)
 
             if not slots:
-                st.error("Aucun créneau trouvé.")
-                return
+                st.markdown("<div class='gg-alert-c'>Aucun créneau disponible.</div>",
+                            unsafe_allow_html=True); return
 
-            st.markdown("<div class='label' style='margin-bottom:10px'>"
-                        f"Top {len(slots)} Créneaux</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='gg-label' style='margin:16px 0 10px'>"
+                        f"◈  {len(slots)} CRÉNEAUX RECOMMANDÉS</div>",
+                        unsafe_allow_html=True)
 
-            medals = ["🥇","🥈","🥉","4️⃣","5️⃣"]
+            medals = ["01", "02", "03", "04", "05"]
             for i, slot in enumerate(slots):
                 feas   = slot.get('feasible', False)
-                feas_c = "#34d399" if feas else "#f59e0b"
-                feas_t = "✅ Faisable" if feas else "⚠️ Partiel (réseau ONEE)"
-                border = "border-color:#00d4aa;" if i==0 else ""
+                feas_c = SUCC if feas else AMBER
+                feas_t = "Faisable" if feas else "Partiel — réseau ONEE"
+                slot_class = "gg-slot gg-slot-best" if i == 0 else "gg-slot"
+
                 conf_str = ""
                 if slot.get('conflicts_with'):
                     names = [c['event_name'] for c in slot['conflicts_with'][:2]]
-                    conf_str = f"<div style='font-size:10px;color:#f59e0b;margin-top:4px'>⚠️ Conflit avec : {', '.join(names)}</div>"
+                    conf_str = (f"<div style='font-family:JetBrains Mono,monospace;"
+                                f"font-size:9px;color:{AMBER};margin-top:8px;letter-spacing:1px'>"
+                                f"△ CONFLIT : {', '.join(names)}</div>")
 
                 st.markdown(f"""
-                <div class='card' style='{border}'>
-                    <div style='display:flex;justify-content:space-between;
-                                align-items:center;margin-bottom:8px'>
-                        <span style='font-size:16px'>{medals[i]}</span>
-                        <span style='font-family:Space Mono;font-size:13px;
-                                     color:#e2e8f0;font-weight:700'>
-                            {slot['date']} — {slot['start']} → {slot['end']}
+                <div class='{slot_class}'>
+                    <div style='display:flex;justify-content:space-between;align-items:center'>
+                        <span style='font-family:JetBrains Mono,monospace;font-size:9px;
+                                     color:{MUTED};letter-spacing:2px'>#{medals[i]}</span>
+                        <span style='font-family:JetBrains Mono,monospace;font-size:13px;
+                                     color:#d8e4f0;font-weight:500'>
+                            {slot['date']} &nbsp;·&nbsp; {slot['start']} → {slot['end']}
                         </span>
-                        <span>
-                            <span style='font-family:Space Mono;font-size:16px;
-                                         color:#00d4aa'>{slot['score']:.4f}</span>
-                            &nbsp;
-                            <span style='font-size:11px;color:{feas_c}'>{feas_t}</span>
-                        </span>
+                        <div style='text-align:right'>
+                            <span style='font-family:JetBrains Mono,monospace;font-size:18px;
+                                         color:{AMBER};font-weight:700'>{slot['score']:.4f}</span>
+                            <div style='font-family:JetBrains Mono,monospace;font-size:9px;
+                                        color:{feas_c};letter-spacing:1px;margin-top:2px'>
+                                {feas_t.upper()}
+                            </div>
+                        </div>
                     </div>
-                    <div style='display:flex;gap:16px;font-size:11px;color:#64748b;
-                                flex-wrap:wrap'>
-                        <span>☀️ PV: <strong style='color:#00d4aa'>{slot['pv_norm']:.2f}</strong></span>
-                        <span>🔋 SOC: <strong style='color:#3b82f6'>{slot['soc_proj']:.2f}</strong></span>
-                        <span>🔌 Grid: <strong style='color:#ef4444'>{slot['grid_dep']:.2f}</strong></span>
-                        <span>📊 Couv.: <strong style='color:#fbbf24'>{slot['coverage_pct']:.1f}%</strong></span>
+                    <div style='display:flex;gap:20px;margin-top:12px;
+                                font-family:JetBrains Mono,monospace;font-size:10px'>
+                        <span style='color:{MUTED}'>PV <strong style='color:{AMBER}'>{slot['pv_norm']:.2f}</strong></span>
+                        <span style='color:{MUTED}'>SOC <strong style='color:{COBALT}'>{slot['soc_proj']:.2f}</strong></span>
+                        <span style='color:{MUTED}'>Grid <strong style='color:{DANG}'>{slot['grid_dep']:.2f}</strong></span>
+                        <span style='color:{MUTED}'>Couv. <strong style='color:{AMBER}'>{slot['coverage_pct']:.1f}%</strong></span>
                     </div>
                     {conf_str}
                 </div>""", unsafe_allow_html=True)
 
-            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
             best = slots[0]
-            cn, cb2 = st.columns([2,1])
+            cn, cb2 = st.columns([2, 1])
             with cn:
                 ev_name = st.text_input("Nom de l'événement",
-                                         value=result.get("event_label",""))
+                                         value=result.get("event_label", ""))
             with cb2:
-                st.markdown("<br>", unsafe_allow_html=True)
-                if st.button("✅ PLANIFIER LE MEILLEUR CRÉNEAU"):
+                st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+                if st.button("✓ PLANIFIER LE MEILLEUR CRÉNEAU"):
                     add_payload = {
-                        "name":           ev_name,
-                        "type":           ev_type,
-                        "date":           best['date'],
-                        "start":          best['start'],
-                        "end":            best['end'],
-                        "importance_pct": custom_imp or profiles.get(ev_type,{}).get('importance_pct',75)
+                        "name": ev_name, "type": ev_type,
+                        "date": best['date'], "start": best['start'], "end": best['end'],
+                        "importance_pct": custom_imp or profiles.get(ev_type, {}).get('importance_pct', 75)
                     }
                     if custom_kw: add_payload["expected_kw"] = custom_kw
                     res = api_post("/events/add", add_payload)
                     if res.get("status") == "added":
-                        st.success(f"✅ Événement planifié : {ev_name}")
-                        pc = res.get("precharge",{})
+                        st.markdown(f"<div class='gg-alert-ok'>✓ Événement planifié : {ev_name}</div>",
+                                    unsafe_allow_html=True)
+                        pc = res.get("precharge", {})
                         if pc.get("needed"):
-                            st.info(f"🔋 Pré-charge : démarrer à {pc.get('start_precharge_at')} "
-                                    f"| SOC cible : {pc.get('soc_target_pct')}% "
-                                    f"| Réseau : {pc.get('e_grid_kwh',0):.1f} kWh")
+                            st.markdown(f"""
+                            <div class='gg-info'>
+                                ◉ Pré-charge — Démarrage : {pc.get('start_precharge_at')} &nbsp;|&nbsp;
+                                SOC cible : {pc.get('soc_target_pct')}% &nbsp;|&nbsp;
+                                Réseau : {pc.get('e_grid_kwh',0):.1f} kWh
+                            </div>""", unsafe_allow_html=True)
                         if res.get("resolution"):
-                            st.warning(res["resolution"].get("fallback_message",""))
+                            st.markdown(f"<div class='gg-alert-w'>{res['resolution'].get('fallback_message','')}</div>",
+                                        unsafe_allow_html=True)
                     else:
-                        st.error(str(res))
+                        st.markdown(f"<div class='gg-alert-c'>{str(res)}</div>",
+                                    unsafe_allow_html=True)
 
-    # ── Tab 2 : Événements planifiés ───────────────────────────
+    # ── Tab 2 ──────────────────────────────────────────────────
     with tab2:
-        st.markdown("<div class='label' style='margin-bottom:12px'>"
-                    "Événements Planifiés</div>", unsafe_allow_html=True)
+        st.markdown("<div class='gg-label' style='margin-bottom:14px'>▣  Événements Planifiés</div>",
+                    unsafe_allow_html=True)
 
         events_data = api_get("/events")
         events = events_data.get("events", [])
 
         if not events:
-            st.info("Aucun événement planifié.")
+            st.markdown("<div class='gg-info'>Aucun événement planifié.</div>",
+                        unsafe_allow_html=True)
             return
 
+        status_colors = {
+            "planned":               SUCC,
+            "planned_with_conflict": AMBER,
+            "active":                COBALT,
+            "completed":             MUTED
+        }
+
         for ev in sorted(events, key=lambda e: f"{e['date']} {e['start']}"):
-            status = ev.get("status","")
-            s_color = {"planned":"#34d399","planned_with_conflict":"#f59e0b",
-                       "active":"#3b82f6","completed":"#64748b"}.get(status,"#94a3b8")
-            imp = ev.get("importance_pct",50)
+            status = ev.get("status", "")
+            s_color = status_colors.get(status, MUTED)
+            imp = ev.get("importance_pct", 50)
 
             with st.expander(
-                f"📅 {ev['date']} {ev['start']}-{ev['end']} — "
-                f"{ev['name']} ({ev.get('expected_kw',0)}kW | {imp}%)"
+                f"▸  {ev['date']}  {ev['start']}–{ev['end']}  ·  "
+                f"{ev['name']}  ({ev.get('expected_kw',0)}kW · {imp}%)"
             ):
-                c1,c2,c3 = st.columns(3)
+                c1, c2, c3 = st.columns(3)
                 with c1:
-                    st.markdown(f"**Type :** {ev.get('label','')}")
+                    st.markdown(f"<div class='gg-label'>Type</div>"
+                                f"<div style='font-size:13px;color:#d8e4f0;margin-bottom:8px'>"
+                                f"{ev.get('label','')}</div>", unsafe_allow_html=True)
                     st.markdown(
-                        f"**Statut :** <span style='color:{s_color}'>{status}</span>",
+                        f"<div class='gg-label'>Statut</div>"
+                        f"<div style='font-family:JetBrains Mono,monospace;font-size:11px;"
+                        f"color:{s_color};letter-spacing:1px'>{status.upper()}</div>",
                         unsafe_allow_html=True)
                 with c2:
-                    st.markdown(f"**Importance :** {imp}%")
-                    st.markdown(f"**Durée :** {ev.get('duration_h',0):.1f}h")
+                    st.markdown(f"<div class='gg-label'>Importance</div>"
+                                f"<div style='font-family:JetBrains Mono,monospace;font-size:18px;"
+                                f"color:#d8e4f0'>{imp}%</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='gg-label' style='margin-top:8px'>Durée</div>"
+                                f"<div style='font-family:JetBrains Mono,monospace;font-size:16px;"
+                                f"color:#d8e4f0'>{ev.get('duration_h',0):.1f} h</div>",
+                                unsafe_allow_html=True)
                 with c3:
-                    if st.button("🗑️ Supprimer", key=f"del_{ev['id']}"):
+                    if st.button("Supprimer", key=f"del_{ev['id']}"):
                         r = api_delete(f"/events/{ev['id']}")
                         if r.get("status") == "deleted":
                             st.success("Supprimé")
                             st.rerun()
                     st.markdown(
-                        f"[📄 Rapport PDF]({API}/report/{ev['id']})",
+                        f"<div style='margin-top:8px'><a href='{API}/report/{ev['id']}' "
+                        f"style='font-family:JetBrains Mono,monospace;font-size:10px;"
+                        f"color:{MUTED};letter-spacing:1px;text-decoration:none'>"
+                        f"↓ RAPPORT PDF</a></div>",
                         unsafe_allow_html=True)
