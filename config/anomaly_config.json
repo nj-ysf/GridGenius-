@@ -1,0 +1,13 @@
+{
+  "bat_soc_critical": 15.0,
+  "bat_soc_low": 25.0,
+  "bat_soc_overcharge": 98.0,
+  "bat_temp_high": 45.0,
+  "bat_temp_critical": 55.0,
+  "bat_voltage_low": 46.0,
+  "bat_voltage_high": 58.5,
+  "pv_voltage_low": 10.0,
+  "pv_current_high": 30.0,
+  "load_deviation_pct": 40.0,
+  "check_load_zero_day": true
+}

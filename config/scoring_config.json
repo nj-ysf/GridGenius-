@@ -1,0 +1,11 @@
+{
+  "alpha": 0.40,
+  "beta": 0.35,
+  "gamma": 0.50,
+  "delta": 0.30,
+  "coverage_min_pct": 60.0,
+  "soc_precharge": 0.80,
+  "cost_grid_kwh": 1.20,
+  "lambda_cycles": 0.50,
+  "p_grid_max": 50.0
+}

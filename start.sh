@@ -25,7 +25,25 @@ API_PID=$!
 cd ..
 
 # Give the API a moment to initialize
-sleep 3
+sleep 5
+
+# Seed historical data (runs only if < 48h of data in DB)
+echo "Seeding historical data if needed..."
+cd ai
+python3 seed_data.py &
+SEED_PID=$!
+cd ..
+
+# Wait for seed to finish before starting simulator
+wait $SEED_PID
+echo "Seed step complete"
+
+# Start live simulation (10s loop feeding data to API)
+echo "Starting live data simulator..."
+cd ai
+python3 simulate.py &
+SIM_PID=$!
+cd ..
 
 # Start Streamlit dashboard on port 5000
 echo "Starting Streamlit dashboard on port 5000..."
@@ -45,4 +63,4 @@ echo "Dashboard: http://localhost:5000"
 echo "API docs: http://localhost:8000/docs"
 
 # Wait for all processes
-wait $INFLUX_PID $API_PID $DASH_PID
+wait $INFLUX_PID $API_PID $SIM_PID $DASH_PID

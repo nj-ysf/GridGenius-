@@ -130,7 +130,7 @@ class InfluxClient:
     def get_mppt_history(self, hours: int = 48) -> list:
         return self._query(
             f"SELECT * FROM mppt_data "
-            f"WHERE time > now() - {hours}h ORDER BY time ASC"
+            f"WHERE time > now() - {int(hours)}h ORDER BY time ASC"
         )
 
     def get_last_mppt(self) -> Optional[dict]:
@@ -197,7 +197,7 @@ class InfluxClient:
     def get_decision_history(self, hours: int = 24) -> list:
         return self._query(
             f"SELECT * FROM decisions "
-            f"WHERE time > now() - {hours}h ORDER BY time ASC"
+            f"WHERE time > now() - {int(hours)}h ORDER BY time ASC"
         )
 
     # ── Alertes ────────────────────────────────────────────────
@@ -212,7 +212,7 @@ class InfluxClient:
     def get_alerts(self, hours: int = 24) -> list:
         return self._query(
             f"SELECT * FROM alerts "
-            f"WHERE time > now() - {hours}h "
+            f"WHERE time > now() - {int(hours)}h "
             f"ORDER BY time DESC LIMIT 50"
         )
 
@@ -229,7 +229,7 @@ class InfluxClient:
     def get_battery_history(self, hours: int = 24) -> list:
         return self._query(
             f"SELECT * FROM battery_state "
-            f"WHERE time > now() - {hours}h ORDER BY time ASC"
+            f"WHERE time > now() - {int(hours)}h ORDER BY time ASC"
         )
 
     # ── Niveau apprentissage ───────────────────────────────────
@@ -281,7 +281,7 @@ class InfluxClient:
             f"mean(bat_soc) AS avg_soc, "
             f"max(pv_power) AS peak_pv "
             f"FROM mppt_data "
-            f"WHERE time > now() - {days}d "
+            f"WHERE time > now() - {int(days)}d "
             f"GROUP BY time(1d) fill(none)"
         )
 
