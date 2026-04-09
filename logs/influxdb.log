@@ -1,0 +1,3 @@
+ts=2026-04-09T23:27:06.479512Z lvl=info msg="InfluxDB starting" log_id=1298z2wl000 version=1.8.10 branch=1.8 commit=688e697c51fd
+ts=2026-04-09T23:27:06.480508Z lvl=info msg="Go runtime" log_id=1298z2wl000 version=go1.13.8 maxprocs=4
+run: open server: listen: listen tcp 127.0.0.1:8088: bind: Une seule utilisation de chaque adresse de socket (protocole/adresse réseau/port) est habituellement autorisée.

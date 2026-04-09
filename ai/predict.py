@@ -11,7 +11,7 @@ predict.py — Prédiction IA GridGenius
 
 import pickle, logging, requests
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta   
 from pathlib import Path
 from collections import defaultdict
 
