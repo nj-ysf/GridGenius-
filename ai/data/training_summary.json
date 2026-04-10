@@ -1,0 +1,116 @@
+{
+  "solar": [
+    {
+      "timestamp": "2023-07-01T00:00",
+      "shortwave_radiation": 0,
+      "temperature_2m": 21.6,
+      "cloudcover": 9,
+      "direct_radiation": 0,
+      "diffuse_radiation": 0,
+      "windspeed_10m": 3.6
+    },
+    {
+      "timestamp": "2023-07-01T01:00",
+      "shortwave_radiation": 0,
+      "temperature_2m": 21.8,
+      "cloudcover": 1,
+      "direct_radiation": 0,
+      "diffuse_radiation": 0,
+      "windspeed_10m": 4.6
+    },
+    {
+      "timestamp": "2023-07-01T02:00",
+      "shortwave_radiation": 0,
+      "temperature_2m": 21.5,
+      "cloudcover": 24,
+      "direct_radiation": 0,
+      "diffuse_radiation": 0,
+      "windspeed_10m": 0.4
+    },
+    {
+      "timestamp": "2023-07-01T03:00",
+      "shortwave_radiation": 0,
+      "temperature_2m": 20.8,
+      "cloudcover": 24,
+      "direct_radiation": 0,
+      "diffuse_radiation": 0,
+      "windspeed_10m": 4.0
+    },
+    {
+      "timestamp": "2023-07-01T04:00",
+      "shortwave_radiation": 0,
+      "temperature_2m": 20.8,
+      "cloudcover": 41,
+      "direct_radiation": 0,
+      "diffuse_radiation": 0,
+      "windspeed_10m": 3.7
+    }
+  ],
+  "consumption": [
+    {
+      "timestamp": "2023-07-01T00:00",
+      "load_kw": 1.5,
+      "hour": 0,
+      "weekday": 5,
+      "month": 7,
+      "is_weekend": 1,
+      "is_working_hours": 0,
+      "is_summer": 1,
+      "is_vacation": 0,
+      "temperature": 21.6
+    },
+    {
+      "timestamp": "2023-07-01T01:00",
+      "load_kw": 1.5,
+      "hour": 1,
+      "weekday": 5,
+      "month": 7,
+      "is_weekend": 1,
+      "is_working_hours": 0,
+      "is_summer": 1,
+      "is_vacation": 0,
+      "temperature": 21.8
+    },
+    {
+      "timestamp": "2023-07-01T02:00",
+      "load_kw": 1.5,
+      "hour": 2,
+      "weekday": 5,
+      "month": 7,
+      "is_weekend": 1,
+      "is_working_hours": 0,
+      "is_summer": 1,
+      "is_vacation": 0,
+      "temperature": 21.5
+    },
+    {
+      "timestamp": "2023-07-01T03:00",
+      "load_kw": 1.5,
+      "hour": 3,
+      "weekday": 5,
+      "month": 7,
+      "is_weekend": 1,
+      "is_working_hours": 0,
+      "is_summer": 1,
+      "is_vacation": 0,
+      "temperature": 20.8
+    },
+    {
+      "timestamp": "2023-07-01T04:00",
+      "load_kw": 1.5,
+      "hour": 4,
+      "weekday": 5,
+      "month": 7,
+      "is_weekend": 1,
+      "is_working_hours": 0,
+      "is_summer": 1,
+      "is_vacation": 0,
+      "temperature": 20.8
+    }
+  ],
+  "n_solar": 8784,
+  "n_consumption": 8784,
+  "date_range": "2023-07-01 \u2192 2024-06-30",
+  "location": "ENSET Mohammedia (33.6897, -7.3897)",
+  "pv_installed_kwp": 10.0
+}

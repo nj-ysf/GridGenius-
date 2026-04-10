@@ -1,0 +1,22 @@
+{
+  "rmse": 2.009076707095887,
+  "mae": 1.0996022900647546,
+  "r2": 0.971499225105881,
+  "n_train": 7180,
+  "n_val": 1268,
+  "feature_names": [
+    "hour",
+    "weekday",
+    "month",
+    "is_weekend",
+    "is_working_hours",
+    "is_summer",
+    "lag_1",
+    "lag_2",
+    "lag_48",
+    "lag_336",
+    "mean_3h",
+    "mean_24h",
+    "event_kw"
+  ]
+}

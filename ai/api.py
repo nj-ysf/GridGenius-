@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-api.py — FastAPI GridGenius (GIEW 2026)
+api.py — FastAPI GridGenius (GIEW 2026 — ENSET Mohammedia)
   Stateless : lit depuis InfluxDB, pas de state en mémoire.
   Port 8000 | uvicorn api:app --host 0.0.0.0 --port 8000
 
