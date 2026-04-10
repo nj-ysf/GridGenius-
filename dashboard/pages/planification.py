@@ -2,9 +2,10 @@
 """pages/planification.py — Planification événements GridGenius"""
 
 import streamlit as st
+import os
 from datetime import date, timedelta
 
-API   = "http://localhost:8000"
+API   = os.getenv("API_BASE_URL", "http://localhost:8000")
 AMBER = "#e8a020"
 COBALT= "#2060d8"
 SUCC  = "#22a86b"

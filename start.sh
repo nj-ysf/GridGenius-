@@ -21,6 +21,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
+# ── Load .env if present ────────────────────────────────────────
+if [[ -f "$ROOT/.env" ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  source "$ROOT/.env"
+  set +a
+  echo "[env] Loaded: $ROOT/.env"
+fi
+
 LOG_DIR="$ROOT/logs"
 mkdir -p "$LOG_DIR"
 

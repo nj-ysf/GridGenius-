@@ -19,6 +19,7 @@ influx_client.py — Client InfluxDB 1.x — GridGenius
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 from influxdb import InfluxDBClient
@@ -26,11 +27,11 @@ from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
 
 log = logging.getLogger(__name__)
 
-INFLUX_HOST          = "localhost"
-INFLUX_PORT          = 8086
-INFLUX_DB            = "microgrid"
-INFLUX_RP            = "rp_default"
-RETENTION_DAYS       = 30
+INFLUX_HOST          = os.getenv("INFLUX_HOST", "localhost")
+INFLUX_PORT          = int(os.getenv("INFLUX_PORT", "8086"))
+INFLUX_DB            = os.getenv("INFLUX_DB", "microgrid")
+INFLUX_RP            = os.getenv("INFLUX_RP", "rp_default")
+RETENTION_DAYS       = int(os.getenv("RETENTION_DAYS", "30"))
 MIN_HOURS_PARTIAL    = 48
 MIN_HOURS_FULL       = 168
 MPPT_INTERVAL_S      = 10       # Δt collecte = 10s

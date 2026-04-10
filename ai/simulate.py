@@ -11,13 +11,14 @@ import math
 import random
 import time
 import logging
+import os
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [simulate] %(levelname)s: %(message)s')
 log = logging.getLogger(__name__)
 
-API = "http://localhost:8000"
+API = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 PV_PROFILE = {
     0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.5,

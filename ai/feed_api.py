@@ -10,9 +10,10 @@ feed_api.py — GridGenius Manual Feed Test Script
 import requests
 import random
 import time
+import os
 from datetime import datetime
 
-API = "http://localhost:8000"
+API = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 PV_PROFILE = {
     0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.5,

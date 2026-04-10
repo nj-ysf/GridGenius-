@@ -8,9 +8,10 @@ app.py — GridGenius Dashboard Entry Point
 
 import streamlit as st
 import requests
+import os
 from datetime import datetime
 
-API = "http://localhost:8000"
+API = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 st.set_page_config(
     page_title="GridGenius",
@@ -529,7 +530,8 @@ with st.sidebar:
     st.markdown(f"""
     <div style='position:absolute;bottom:20px;left:0;right:0;
                 font-family:JetBrains Mono,monospace;font-size:8px;
-                color:#253040;text-align:center;letter-spacing:2px'>
+                color:#253040;text-align:center;letter-spacing:2px;
+                pointer-events:none;z-index:0'>
         {datetime.now().strftime('%Y·%m·%d — %H:%M:%S')}
     </div>
     """, unsafe_allow_html=True)

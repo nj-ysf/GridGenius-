@@ -159,10 +159,9 @@ def render(api_get):
                       'peak_pv_kw', 'peak_conso_kw']].copy()
         df_s.columns = ['Date', 'PV kWh', 'Conso kWh', 'Autonomie %',
                          'Pic PV kW', 'Pic Conso kW']
+        # Avoid pandas Styler.background_gradient because it requires matplotlib.
         st.dataframe(
-            df_s.style
-                .format({c: '{:.1f}' for c in df_s.columns[1:]})
-                .background_gradient(subset=['Autonomie %'], cmap='YlOrRd'),
+            df_s.style.format({c: '{:.1f}' for c in df_s.columns[1:]}),
             use_container_width=True,
             hide_index=True
         )

@@ -3,6 +3,7 @@
 
 import streamlit as st
 import plotly.graph_objects as go
+import os
 
 BG    = "#06090f"
 SURF  = "#0b1120"
@@ -14,6 +15,7 @@ SUCC  = "#22a86b"
 DANG  = "#c93030"
 MUTED = "#4a6080"
 TEXT2 = "#8ba0bc"
+API   = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 
 def render(api_get, api_put):
@@ -229,7 +231,7 @@ def render(api_get, api_put):
             import requests
             with st.spinner("Simulation en cours..."):
                 try:
-                    r = requests.post(f"http://localhost:8000/predict",
+                    r = requests.post(f"{API}/predict",
                                       params={"days": sim_days}, timeout=30)
                     sim = r.json()
                 except Exception as e:
