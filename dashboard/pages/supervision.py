@@ -19,46 +19,16 @@ TEXT2 = "#8ba0bc"
 
 
 def _gauge(val, max_val, title, unit, color, min_val=0):
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=val,
-        title={
-            "text": title,
-            "font": {"family": "JetBrains Mono", "size": 10, "color": MUTED}
-        },
-        number={
-            "suffix": f" {unit}",
-            "font": {"family": "JetBrains Mono", "size": 20, "color": "#d8e4f0"}
-        },
-        gauge={
-            "axis": {
-                "range": [min_val, max_val],
-                "tickfont": {"size": 8, "color": MUTED},
-                "tickcolor": BORD
-            },
-            "bar": {"color": color, "thickness": 0.5},
-            "bgcolor": "#0b1120",
-            "borderwidth": 1,
-            "bordercolor": BORD,
-            "steps": [
-                {"range": [min_val, max_val * 0.33], "color": "#0a1220"},
-                {"range": [max_val * 0.33, max_val * 0.66], "color": "#0d1628"},
-                {"range": [max_val * 0.66, max_val], "color": "#101c32"},
-            ],
-            "threshold": {
-                "line": {"color": color, "width": 2},
-                "thickness": 0.8,
-                "value": val
-            }
-        }
-    ))
-    fig.update_layout(
-        height=180,
-        margin=dict(l=16, r=16, t=44, b=8),
-        paper_bgcolor="rgba(0,0,0,0)",
-        font_color=TEXT2
-    )
-    return fig
+    pct = min(100, max(0, (val - min_val) / (max_val - min_val) * 100))
+    return f"""
+    <div class='gg-card' style='text-align:center; padding: 30px 20px; min-height: 180px; display:flex; flex-direction:column; justify-content:center'>
+        <div class='gg-label' style='margin-bottom: 16px'>{title}</div>
+        <div class='gg-value' style='color:{color}; font-size:42px; margin-bottom: 24px'>{val:.1f} <span style='font-size:16px; color:{MUTED}'>{unit}</span></div>
+        <div class='gg-bar-track' style='height:6px; background:#0b1120; border:1px solid {BORD}'>
+            <div class='gg-bar-fill' style='width:{pct}%; background:{color}; box-shadow:0 0 10px {color}40'></div>
+        </div>
+    </div>
+    """
 
 
 def _mode_badge(mode: str) -> str:
@@ -236,9 +206,9 @@ def render(api_get):
 
         # ── Gauges ─────────────────────────────────────────────
         g1, g2, g3 = st.columns(3)
-        with g1: st.plotly_chart(_gauge(pv,  10,  "PUISSANCE PV",  "kW", AMBER),  use_container_width=True)
-        with g2: st.plotly_chart(_gauge(soc, 100, "SOC BATTERIE",  "%",  COBALT), use_container_width=True)
-        with g3: st.plotly_chart(_gauge(load, 40, "CONSOMMATION",  "kW", SUCC),   use_container_width=True)
+        with g1: st.markdown(_gauge(pv,  10,  "PUISSANCE PV",  "kW", AMBER),  unsafe_allow_html=True)
+        with g2: st.markdown(_gauge(soc, 100, "SOC BATTERIE",  "%",  COBALT), unsafe_allow_html=True)
+        with g3: st.markdown(_gauge(load, 40, "CONSOMMATION",  "kW", SUCC),   unsafe_allow_html=True)
 
         # ── Active events ──────────────────────────────────────
         if s.get("active_events", 0) > 0:

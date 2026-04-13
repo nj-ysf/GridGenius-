@@ -82,7 +82,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="GridGenius API",
-    description="Micro-Réseau Intelligent — EHTP GIEW 2026",
+    description="Micro-Réseau Intelligent — ENSET Mohammedia GIEW 2026",
     version="3.0.0",
     lifespan=lifespan
 )

@@ -11,7 +11,7 @@ import requests
 import os
 from datetime import datetime
 
-API = os.getenv("API_BASE_URL", "http://localhost:8000")
+API = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 
 st.set_page_config(
     page_title="GridGenius",
